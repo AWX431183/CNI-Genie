@@ -49,7 +49,9 @@ const (
 	DefaultPluginDir = "/opt/cni/bin"
 	// ConfFilePermission specifies the default permission for conf file
 	ConfFilePermission os.FileMode = 0644
+
 )
+
 
 // PopulateCNIArgs wraps skel.CmdArgs into Genie's native CNIArgs format.
 func PopulateCNIArgs(args *skel.CmdArgs) utils.CNIArgs {

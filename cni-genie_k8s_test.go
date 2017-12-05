@@ -424,6 +424,8 @@ var _ = BeforeSuite(func() {
 		panic(err)
 	}
 	createNamespace(clientset)
+	cmd := exec.Command("./plugins_install.sh", "-all")
+	_, err = cmd.Output()
 })
 
 var _ = AfterSuite(func() {

@@ -7,7 +7,7 @@ import (
 // sort a map's keys in ascending order of its values.
 
 type sortedMap struct {
-	m map[string]int
+	m map[string]uint64
 	s []string
 }
 
@@ -23,7 +23,7 @@ func (sm *sortedMap) Swap(i, j int) {
 	sm.s[i], sm.s[j] = sm.s[j], sm.s[i]
 }
 
-func SortedKeys(m map[string]int) []string {
+func SortedKeys(m map[string]uint64) []string {
 	sm := new(sortedMap)
 	sm.m = m
 	sm.s = make([]string, len(m))

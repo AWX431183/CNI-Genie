@@ -35,7 +35,9 @@ import (
 	"path"
 	"strings"
 )
-
+const (
+SupportedPlugins = "flannel,weave,,calico,romana"
+)
 // Client represents the base URL for a cAdvisor client.
 type Client struct {
 	baseUrl    string
@@ -112,35 +114,32 @@ It returns {weave, calico, flannel}
 
 */
 func computeNetworkUsage(cinfo []ContainerStatsGenie) string {
-	//default ranks of usage
-	//TODO (Karun): This is just a simple way of ranking. Needs improvement.
-	//go with flannel as first preference, calico as second
-	// weave as third
-	m := make(map[string]int)
-	m["flan"] = 0
-	m["cali"] = 0
-	m["weav"] = 0
-	var downlink int
 
+	m := make(map[string]uint64)
+	var downlink uint64
 	rx := make(map[string]uint64)
 
-	//TODO (Karun): Need to rethink on the logic. This is not an accurate measure.
 	for i, c := range cinfo {
 		fmt.Fprintf(os.Stderr, "CAdvisor Client computeNetworkUsage i = %v\n", i)
+		fmt.Fprintf(os.Stderr, "CAdvisor Client plugin i = %v\n", c)
+		//only it will add supported plugins into the map.Other network plugins it will skip
 		for _, intf := range c.Network.Interfaces {
-			if _, ok := m[intf.Name[:4]]; ok {
+			fmt.Fprintf(os.Stderr, "CAdvisor Client plugin name = %v\n", intf.Name)
+			if strings.Contains(SupportedPlugins , intf.Name[:4]) {
+				fmt.Fprintf(os.Stderr, "plugin added to m  = %v\n", m)
 				if oldrx, ok := rx[intf.Name]; ok {
 					fmt.Fprintf(os.Stderr, "CAdvisor Client computeNetworkUsage intfname = %v\n", intf.Name[:4])
 					fmt.Fprintf(os.Stderr, "CAdvisor Client computeNetworkUsage intf.RxBytes = %v\n", intf.RxBytes)
 					fmt.Fprintf(os.Stderr, "CAdvisor Client computeNetworkUsage oldrx = %v\n", oldrx)
-					downlink = int(intf.RxBytes - oldrx)
+					downlink = uint64(intf.RxBytes - oldrx)
 				}
 				rx[intf.Name] = intf.RxBytes
 				m[intf.Name[:4]] = downlink
+				fmt.Fprintf(os.Stderr, "pluggins got  m  = %v\n", m)
 			}
 		}
 	}
-	fmt.Fprintf(os.Stderr, "CAdvisor Client computeNetworkUsage m = %v\n", m)
+	fmt.Fprintf(os.Stderr, "CAdvisor Client computeNetworkUsage m before sort = %v\n", m)
 	//sort by values of map
 	cns := SortedKeys(m)
 	for i, c := range cns {
@@ -149,10 +148,9 @@ func computeNetworkUsage(cinfo []ContainerStatsGenie) string {
 		} else if c == "flan" {
 			cns[i] = "flannel"
 		} else if c == "cali" {
-			// TODO (Karun): This is a bad fix.
-			// Calico bin wasn't working correctly
-			//cns[i] = "calico"
 			cns[i] = "calico"
+		}else if c == "roma" {
+			cns[i] = "romana"
 		}
 	}
 	fmt.Fprintf(os.Stderr, "CAdvisor Client computeNetworkUsage cns = %v\n", cns[0])
