@@ -6,6 +6,7 @@ then
 echo "flannel already running\n"
 else
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.9.1/Documentation/kube-flannel.yml
+sleep 1m
 fi
 
 }
@@ -17,6 +18,7 @@ then
 echo "weave already running\n"
 else
 kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+sleep 1m
 fi
 }
 
@@ -26,6 +28,7 @@ then
 echo "romana already running\n"
 else
 kubectl apply -f https://raw.githubusercontent.com/romana/romana/master/containerize/specs/romana-kubeadm.yml
+sleep 1m
 fi
 }
 
@@ -35,19 +38,16 @@ then
 echo "calico already running\n"
 else
 kubectl apply -f https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/1.6/calico.yaml
+sleep 1m
 fi
 }
 
 Plugins_CNI()
 {
 Flannel_plugin
-sleep 1m
 Weave_plugin
-sleep 1m
 Romana_plugin
-sleep 1m
 Calico_plugin
-sleep 1m
 }
 options () {
 	echo "please provide Valid option"
