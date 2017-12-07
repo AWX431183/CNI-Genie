@@ -66,7 +66,7 @@ run () {
 	echo $@
         echo $1
         flag=0
-        declare -a input=("-all" "-f" "-c" "-r" "-w")
+        declare -a input=("-all" "-F" "-C" "-R" "-W")
                for i in "${input[@]}"
                do
                        if [ "$i" == "$1" ]
